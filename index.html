@@ -1,0 +1,84 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Climafy - What's the weather</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@400..800&display=swap" rel="stylesheet">
+<link rel="shortcut icon" href="favicon.png" type="image/x-icon">
+<meta name="description" content="Climafy is a sleek and user-friendly weather application that delivers real-time weather information for any city in the world. Whether you're planning your day, traveling, or just curious about global conditions — Climafy gives you accurate, up-to-date data at a glance.">
+
+</head>
+<body>
+  <header>
+    <nav class="navigation">
+      <div class="logo-container">
+        <img src="logo1.JPG" alt="Climafy Logo" class="logo">
+        
+      </div>
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="about.html" class="nav-link">About</a></li>
+        <li><a href="contact.html" class="nav-link">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <h2 class="searchheading">Search Weather</h2>
+    <input class="input" type="search" placeholder="Enter a city or Your location">
+
+    <div class="weather-info" id="weather-info" style="display: none;">
+      <h3>Weather Info for <span id="city-name"></span>:</h3>
+      <p class="temp">🌡 Temperature: <span id="temp"></span>°C</p>
+      <p>👉 Feels Like: <span id="feels"></span>°C</p>
+      <p>💧 Humidity: <span id="humidity"></span>%</p>
+      <p>💨 Wind Speed: <span id="wind-speed"></span> m/s</p>
+      <p>🧭 Wind Direction: <span id="wind-deg"></span>°</p>
+      <p>🌤 Description: <span id="desc"></span></p>
+    </div>
+    
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    const input = document.querySelector('.input');
+  
+    input.addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') {
+        const city = input.value.trim();
+        if (!city) return;
+  
+        axios.get(`http://127.0.0.1:5000/weather?city=${city}`)
+          .then(response => {
+            const data = response.data;
+  
+            // Fill data into spans
+            document.getElementById('city-name').textContent = city;
+            document.getElementById('temp').textContent = data.temperature;
+            document.getElementById('feels').textContent = data.feels_like;
+            document.getElementById('humidity').textContent = data.humidity;
+            document.getElementById('wind-speed').textContent = data.wind_speed;
+            document.getElementById('wind-deg').textContent = data.wind_deg;
+            document.getElementById('desc').textContent = data.description;
+  
+            // Show the weather info box
+            document.getElementById('weather-info').style.display = 'block';
+          })
+          .catch(error => {
+            document.getElementById('weather-info').style.display = 'none';
+            if (error.response) {
+              alert(`Error: ${error.response.data.error}`);
+            } else {
+              alert("❌ Could not fetch weather data.");
+            }
+          });
+      }
+    });
+  </script>
+  
+
+</body>
+</html>
