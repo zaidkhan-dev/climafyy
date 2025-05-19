@@ -1,23 +1,19 @@
 import os
 import requests
-from flask import Flask, request
+from flask import Flask, request, render_template
 
 app = Flask(__name__)
 
 @app.route('/')
 def home():
     city = request.args.get('city')
+    
     if not city:
-        return '''
-            <h2>Enter a City Name</h2>
-            <form method="get">
-                <input type="text" name="city" required />
-                <input type="submit" value="Get Weather" />
-            </form>
-        '''
+        return render_template('index.html', city_name=None)
 
     city_name = city.strip().lower().capitalize()
-    api_key = "c80af8b2b8e24801ee72e884285feb96"  # replace with os.getenv("MY_API_KEY") in production
+    
+    api_key = "c80af8b2b8e24801ee72e884285feb96"
     api_url = f"https://api.openweathermap.org/data/2.5/weather?q={city_name}&appid={api_key}&units=metric"
 
     try:
@@ -32,18 +28,16 @@ def home():
             wind_deg = data["wind"]["deg"]
             description = data["weather"][0]["description"]
 
-            return f"""
-                <h3>Weather for {city_name}:</h3>
-                <ul>
-                    <li>🌡️ Temperature: {temperature}°C</li>
-                    <li>🤔 Feels Like: {feels_temp}°C</li>
-                    <li>💧 Humidity: {humidity}%</li>
-                    <li>🌬️ Wind Speed: {wind_speed} m/s</li>
-                    <li>🧭 Wind Direction: {wind_deg}°</li>
-                    <li>📖 Description: {description}</li>
-                </ul>
-                <a href="/">Search another city</a>
-            """
+            return render_template(
+                'index.html',
+                city_name=city_name,
+                temperature=temperature,
+                feels_temp=feels_temp,
+                humidity=humidity,
+                wind_speed=wind_speed,
+                wind_deg=wind_deg,
+                description=description
+            )
         else:
             return f"<h3>❌ Error: {data.get('message', 'Unable to fetch weather data')}</h3>"
 
